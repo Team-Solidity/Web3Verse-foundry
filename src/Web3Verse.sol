@@ -64,6 +64,10 @@ contract Web3Verse {
         return tempadd;
     }
 
+    function getUser() external view userExists returns (User memory) {
+        return users[msg.sender];
+    }
+
     function getPost(uint256 _postId) external view returns (uint256, address, string memory, uint256, address[] memory) {
         require(_postId < posts.length, "Post does not exist");
 
@@ -87,7 +91,7 @@ contract Web3Verse {
 
         users[msg.sender].likedPosts.push(_postId);
         posts[_postId].likes.push(msg.sender);
-        
+
         emit PostLiked(msg.sender, _postId);
     }
 
