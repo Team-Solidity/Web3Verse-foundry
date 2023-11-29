@@ -16,6 +16,8 @@ contract Web3Verse {
         uint256 postId;
         address author;
         string content;
+        string desc;
+        string title;
         uint256 timestamp;
         address[] likes;
         uint256 nftid;
@@ -25,7 +27,7 @@ contract Web3Verse {
     mapping(string => address) public usadd;
     Post[] public posts;
 
-    event PostCreated(uint256 indexed postId, address indexed author, string content, uint256 timestamp);
+    event PostCreated(uint256 indexed postId, address indexed author, string content, string desc, string title, uint256 timestamp);
     event UserFollowed(address indexed follower, address indexed following);
     event PostLiked(address indexed liker, uint256 indexed postId);
 
@@ -51,11 +53,11 @@ contract Web3Verse {
         usadd[_username] = msg.sender;
     }
 
-    function createPost(string memory _content, uint256 _nftid) external userExists {
+    function createPost(string memory _content, string memory _desc, string memory _title, uint256 _nftid) external userExists {
         uint256 postId = posts.length;
-        posts.push(Post(postId, msg.sender, _content, block.timestamp, new address[](0), _nftid));
+        posts.push(Post(postId, msg.sender, _content,_desc,_title,  block.timestamp, new address[](0), _nftid));
 
-        emit PostCreated(postId, msg.sender, _content, block.timestamp);
+        emit PostCreated(postId, msg.sender, _content,_desc, _title, block.timestamp);
     }
 
     function getUserProfile(string memory usname) external view userExists returns (address) {
@@ -68,11 +70,15 @@ contract Web3Verse {
         return users[msg.sender];
     }
 
-    function getPost(uint256 _postId) external view returns (uint256, address, string memory, uint256, address[] memory) {
+    function getPost(uint256 _postId) external view returns (uint256, address, string memory, string memory, string memory, uint256, address[] memory) {
         require(_postId < posts.length, "Post does not exist");
 
         Post memory post = posts[_postId];
-        return (post.postId, post.author, post.content, post.timestamp, post.likes);
+        return (post.postId, post.author, post.content, post.desc, post.title, post.timestamp, post.likes);
+    }
+
+    function getAllPost() external view returns (Post[] memory) {
+        return posts;
     }
 
     function followUser(address _userToFollow) external userExists {
